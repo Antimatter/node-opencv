@@ -10,6 +10,7 @@
         "src/CascadeClassifierWrap.cc",
         "src/Contours.cc",
         "src/Point.cc",
+        "src/Rect.cc",
         "src/VideoCaptureWrap.cc",
         "src/CamShift.cc",
         "src/HighGUI.cc",
@@ -20,7 +21,8 @@
         "src/Calib3D.cc",
         "src/ImgProc.cc",
         "src/Stereo.cc",
-        "src/LDAWrap.cc"
+        "src/LDAWrap.cc",
+        "src/GrabCut.cc"
       ],
 
       "libraries": [

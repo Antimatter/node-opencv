@@ -364,9 +364,26 @@ test('Mean', function(assert) {
   var means = a.mean();
   assert.deepEqual(means, [0.25, 0.25, 0.25, 0]);
   assert.end();
-});
 
+
+test('Rect', function(t){
+
+  t.ok(new cv.Rect(1, 2, 3, 4))
+  t.throws(function () { cv.Rect(1, 2, 3, 4)}, TypeError, "cannot call without new")
+
+  t.equal(new cv.Rect(1, 2, 3, 4).x, 1)
+  t.equal(new cv.Rect(1, 2, 3, 4).y, 2)
+  t.equal(new cv.Rect(1, 2, 3, 4).width, 3)
+  t.equal(new cv.Rect(1, 2, 3, 4).height, 4)
+  t.equal(Math.round(new cv.Rect(1.1, 2, 3, 4).x * 100), 110)
+  t.equal(Math.round(new cv.Rect(1.2, 2.75, 3, 4).y *100), 275)
+  t.equal(Math.round(new cv.Rect(1.2, 2.75, 3.10, 4).width *100), 310)
+  t.equal(Math.round(new cv.Rect(1.2, 2.75, 3, 4.25).height *100), 425)
+
+  t.throws(function () {new cv.Rect(1.1, 2, 3, 4).x = 5}, Error, "Points are immutable")
+  t.throws(function () {new cv.Rect(1.1, 2, 3, 4).y = 5}, Error, "Points are immutable")
+  
+  t.end()
+})
 // Test the examples folder.
 require('./examples')()
-
-
