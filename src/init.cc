@@ -1,6 +1,7 @@
 #include "OpenCV.h"
 
 #include "Point.h"
+#include "Rect.h"
 #include "Matrix.h"
 #include "CascadeClassifierWrap.h"
 #include "VideoCaptureWrap.h"
@@ -21,6 +22,7 @@ extern "C" void init(Local<Object> target) {
   OpenCV::Init(target);
 
   Point::Init(target);
+  Rect::Init(target);
   Matrix::Init(target);
   CascadeClassifierWrap::Init(target);
   VideoCaptureWrap::Init(target);
