@@ -90,7 +90,12 @@ void Constants::Init(Local<Object> target) {
   CONST_ENUM(RETR_CCOMP);
   CONST_ENUM(RETR_TREE);
 
+  CONST_ENUM(GC_INIT_WITH_RECT);
+  CONST_ENUM(GC_INIT_WITH_MASK);
+  CONST_ENUM(GC_EVAL);
+
   target->Set(Nan::New("Constants").ToLocalChecked(), obj);
 }
+
 
 #undef CONST
