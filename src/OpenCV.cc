@@ -11,6 +11,7 @@ void OpenCV::Init(Local<Object> target) {
   target->Set(Nan::New<String>("version").ToLocalChecked(), Nan::New<String>(out, n).ToLocalChecked());
 
   Nan::SetMethod(target, "readImage", ReadImage);
+  Nan::SetMethod(target, "fromDomImage", FromDomImage);
 }
 
 NAN_METHOD(OpenCV::ReadImage) {
