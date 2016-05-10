@@ -18,6 +18,15 @@ NAN_METHOD(OpenCV::FromDomImage) {
   try {
     cv::Mat mat;
 
+    std::string src = std::string(*Nan::Utf8String(info[0]->ToString()));
+    size_t pos = src.find_first_of(',');
+    std::string b64s = src.substr(pos+1);
+
+    const char* b64string = b64s.c_str();
+    size_t sourcelen = strlen(b64string);
+    char* dest = (char*) malloc(modp_b64_decode_len(sourcelen));
+    int len = modp_b64_decode(dest, b64string, sourcelen);
+
     img->mat = mat;
   } catch (cv::Exception& e) {
     argv[0] = Nan::Error(e.what());
