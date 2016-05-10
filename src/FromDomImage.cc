@@ -42,3 +42,4 @@ NAN_METHOD(OpenCV::FromDomImage) {
 
   return;
 }
+
