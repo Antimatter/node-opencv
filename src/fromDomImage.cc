@@ -1,5 +1,6 @@
 #include "OpenCV.h"
 #include "Matrix.h"
+#include "modp_b64/modp_b64.h"
 #include <nan.h>
 
 NAN_METHOD(OpenCV::FromDomImage) {

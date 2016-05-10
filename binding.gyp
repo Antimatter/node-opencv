@@ -23,7 +23,8 @@
         "src/ImgProc.cc",
         "src/Stereo.cc",
         "src/LDAWrap.cc",
-        "src/GrabCut.cc"
+        "src/GrabCut.cc",
+        "src/modp_b64/modp_b64.cc"
       ],
 
       "libraries": [
