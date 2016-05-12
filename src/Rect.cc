@@ -42,9 +42,9 @@ NAN_METHOD(Rect::New) {
   if (info[3]->IsNumber()) {
     height = info[3]->NumberValue();
   }
-  Rect *pt = new Rect(x, y, width, height);
-  pt->Wrap(info.This());
-  info.GetReturnValue().Set(info.This());
+  Rect *rect = new Rect(x, y, width, height);
+  rect->Wrap(info.Holder());
+  info.GetReturnValue().Set(info.Holder());
 }
 
 NAN_GETTER(Rect::GetX) {
@@ -77,6 +77,6 @@ NAN_SETTER(Rect::RaiseImmutable) {
 
 
 Rect::Rect(double x, double y, double width, double height) :
-    Nan::ObjectWrap() {
+    node_opencv::Rect() {
   rect = cv::Rect((int)x, (int)y, (int)width, (int)height);
 }

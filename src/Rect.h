@@ -1,8 +1,8 @@
 #include "OpenCV.h"
+#include "../inc/Rect.h"
 
-class Rect: public Nan::ObjectWrap {
+class Rect: public node_opencv::Rect {
 public:
-  cv::Rect rect;
   static Nan::Persistent<FunctionTemplate> constructor;
   static void Init(Local<Object> target);
   static NAN_METHOD(New);
