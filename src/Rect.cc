@@ -78,5 +78,5 @@ NAN_SETTER(Rect::RaiseImmutable) {
 
 Rect::Rect(double x, double y, double width, double height) :
     Nan::ObjectWrap() {
-  rect = cvRect((int)x, (int)y, (int)width, (int)height);
+  rect = cv::Rect((int)x, (int)y, (int)width, (int)height);
 }
