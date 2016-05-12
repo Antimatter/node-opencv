@@ -18,7 +18,7 @@ void Rect::Init(Local<Object> target) {
   Nan::SetAccessor(proto, Nan::New("y").ToLocalChecked(), GetY, RaiseImmutable);
   Nan::SetAccessor(proto, Nan::New("width").ToLocalChecked(), GetWidth, RaiseImmutable);
   Nan::SetAccessor(proto, Nan::New("height").ToLocalChecked(), GetHeight, RaiseImmutable);
-  
+
   target->Set(Nan::New("Rect").ToLocalChecked(), ctor->GetFunction());
 };
 
@@ -78,5 +78,5 @@ NAN_SETTER(Rect::RaiseImmutable) {
 
 Rect::Rect(double x, double y, double width, double height) :
     Nan::ObjectWrap() {
-  rect = cvRect(x, y, width, height);
+  rect = cvRect((int)x, (int)y, (int)width, (int)height);
 }
