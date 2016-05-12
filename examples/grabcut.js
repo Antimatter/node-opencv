@@ -1,6 +1,15 @@
 var cv = require('../lib/opencv');
 function testGrabcut(img){
   cv.fromDomImage(img.src, function(err, im){
+    if(err){
+      console.log(err)
+      return
+    }
+    var window = new cv.NamedWindow('Video', 0)
+    if (im.size()[0] > 0 && im.size()[1] > 0){
+      window.show(im);
+    }
+    window.blockingWaitKey(0, 50);
 
   })
   

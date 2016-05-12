@@ -27,6 +27,10 @@ NAN_METHOD(OpenCV::FromDomImage) {
     char* dest = (char*) malloc(modp_b64_decode_len(sourcelen));
     int len = modp_b64_decode(dest, b64string, sourcelen);
 
+    cv::Mat *mbuf = new cv::Mat(len, 1, CV_64FC1, dest);
+    mat = cv::imdecode(*mbuf, CV_LOAD_IMAGE_UNCHANGED);
+
+    free(dest);
     img->mat = mat;
   } catch (cv::Exception& e) {
     argv[0] = Nan::Error(e.what());
