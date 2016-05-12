@@ -2,7 +2,7 @@
 
 class Rect: public Nan::ObjectWrap {
 public:
-  CvRect rect;
+  CvRect32f rect;
   static Nan::Persistent<FunctionTemplate> constructor;
   static void Init(Local<Object> target);
   static NAN_METHOD(New);
