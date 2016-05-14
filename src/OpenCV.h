@@ -68,7 +68,7 @@ public:
 
   static NAN_METHOD(ReadImage);
 
-  static NAN_METHOD(FromDomImage);
+  static NAN_METHOD(FromDataURL);
 };
 
 #endif

@@ -3,7 +3,7 @@
 #include "modp_b64/modp_b64.h"
 #include <nan.h>
 
-NAN_METHOD(OpenCV::FromDomImage) {
+NAN_METHOD(OpenCV::FromDataURL) {
   Nan::EscapableHandleScope scope;
 
   REQ_FUN_ARG(1, cb);
@@ -46,4 +46,3 @@ NAN_METHOD(OpenCV::FromDomImage) {
 
   return;
 }
-
