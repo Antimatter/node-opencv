@@ -94,6 +94,11 @@ void Constants::Init(Local<Object> target) {
   CONST_ENUM(GC_INIT_WITH_MASK);
   CONST_ENUM(GC_EVAL);
 
+  CONST_ENUM(GC_BGD)
+  CONST_ENUM(GC_FGD)
+  CONST_ENUM(GC_PR_BGD)
+  CONST_ENUM(GC_PR_FGD)
+
   target->Set(Nan::New("Constants").ToLocalChecked(), obj);
 }
 
