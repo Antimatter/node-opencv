@@ -11,9 +11,8 @@ public:
 
   NamedWindow(const std::string& winname, int flags);
 
-  JSFUNC(Show)
-  ;JSFUNC(Destroy)
-  ;JSFUNC(BlockingWaitKey)
-  ;
+  JSFUNC(Show);
+  JSFUNC(Destroy);
+  JSFUNC(BlockingWaitKey);
 
 };

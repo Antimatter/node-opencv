@@ -1,15 +1,29 @@
 var cv = require('../lib/opencv');
 function testGrabcut(img){
-  cv.fromDomImage(img.src, function(err, im){
+  cv.fromDataUrl(img.src, function(err, im){
     if(err){
       console.log(err)
       return
     }
-    var window = new cv.NamedWindow('Video', 0)
-    if (im.size()[0] > 0 && im.size()[1] > 0){
-      window.show(im);
+    cv.encPngDataURL(im, function(err, dataUrl){
+      if(err){
+        console.log('err')
+      }
+      cv.fromDataUrl(dataUrl, function(err, im2){
+        var win2 = new cv.NamedWindow('Video2', 0)
+        if (im.size()[0] > 0 && im.size()[1] > 0){
+          win2.show(im2);
+        }
+        win2.blockingWaitKey(0, 5000);
+      })
+
+
+    })
+    var win1 = new cv.NamedWindow('Video1', 0)
+    if (im.size()[0] > 0 && im.size()[1] > 0) {
+      win1.show(im);
     }
-    window.blockingWaitKey(0, 50);
+    win1.blockingWaitKey(0, 500);
 
   })
   

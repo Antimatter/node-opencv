@@ -12,6 +12,7 @@ void OpenCV::Init(Local<Object> target) {
 
   Nan::SetMethod(target, "readImage", ReadImage);
   Nan::SetMethod(target, "fromDataUrl", FromDataURL);
+  Nan::SetMethod(target, "encPngDataURL", EncPngDataURL);
 }
 
 NAN_METHOD(OpenCV::ReadImage) {
