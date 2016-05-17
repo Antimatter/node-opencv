@@ -128,6 +128,8 @@ public:
   JSFUNC(Release)
 
   JSFUNC(Subtract)
+
+  JSFUNC(Where)
   /*
    static Handle<Value> Val(const Arguments& info);
    static Handle<Value> RowRange(const Arguments& info);

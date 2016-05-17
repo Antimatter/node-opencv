@@ -111,6 +111,7 @@ void Matrix::Init(Local<Object> target) {
   Nan::SetPrototypeMethod(ctor, "reshape", Reshape);
   Nan::SetPrototypeMethod(ctor, "release", Release);
   Nan::SetPrototypeMethod(ctor, "subtract", Subtract);
+  Nan::SetPrototypeMethod(ctor, "where", Where);
 
   target->Set(Nan::New("Matrix").ToLocalChecked(), ctor->GetFunction());
 };
@@ -2271,19 +2272,19 @@ NAN_METHOD(Matrix::MatchTemplate) {
   int method = (info.Length() < 2) ? (int)cv::TM_CCORR_NORMED : info[1]->Uint32Value();
   cv::matchTemplate(self->mat, templ, m_out->mat, method);
   cv::normalize(m_out->mat, m_out->mat, 0, 1, cv::NORM_MINMAX, -1, cv::Mat());
-  double minVal; 
-  double maxVal; 
-  cv::Point minLoc; 
+  double minVal;
+  double maxVal;
+  cv::Point minLoc;
   cv::Point maxLoc;
   cv::Point matchLoc;
 
   minMaxLoc(m_out->mat, &minVal, &maxVal, &minLoc, &maxLoc, cv::Mat());
 
-  if(method  == CV_TM_SQDIFF || method == CV_TM_SQDIFF_NORMED) { 
-    matchLoc = minLoc; 
+  if(method  == CV_TM_SQDIFF || method == CV_TM_SQDIFF_NORMED) {
+    matchLoc = minLoc;
   }
-  else { 
-    matchLoc = maxLoc; 
+  else {
+    matchLoc = maxLoc;
   }
 
   //detected ROI
@@ -2597,5 +2598,48 @@ NAN_METHOD(Matrix::Subtract) {
 
   self->mat -= other->mat;
 
+  return;
+}
+
+// numpy.where
+// http://docs.scipy.org/doc/numpy-1.10.1/reference/generated/numpy.where.html
+// mask2 = np.where((mask==1) + (mask==3),255,0).astype('uint8')
+NAN_METHOD(Matrix::Where) {
+  SETUP_FUNCTION(Matrix)
+
+  if(info.Length() < 3) {
+    Nan::ThrowTypeError("Invalid number of arguments");
+  }
+
+  if (!(info[0]->IsArray() || info[0]->IsNumber()) || !info[1]->IsNumber() || !info[2]->IsNumber()) {
+	Nan::ThrowTypeError("Invalid arguments type");
+  }
+  std::vector<uchar> cond;
+  if (info[0]->IsArray()) {	  
+	  Local<Array> valArray = Local<Array> ::Cast(info[0]->ToObject());
+	  const int length = valArray->Length();
+	  for (int i = 0; i < length; i++) {
+		  cond.push_back((uchar)valArray->Get(i)->NumberValue());
+	  }	  
+  }
+  else {
+	  cond.push_back((uchar)info[0]->NumberValue());
+  }
+  uchar x = (uchar)(info[1]->NumberValue());
+  uchar y = (uchar)(info[2]->NumberValue());
+
+  int width = self->mat.size().width;
+  int height = self->mat.size().height;
+
+  self->mat.forEach<uchar>([cond](uchar &pixel, const int * position) -> void {	  
+	  static const uchar *p = cond.data();
+	  static const int len = cond.size();
+	  bool r = false;
+	  for (int i = 0; i < len; i++) {
+		  r = r || (pixel == *(p + i));
+	  }
+	  pixel = r ? 255 : 0;
+  });
+   
   return;
 }
