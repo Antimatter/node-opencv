@@ -99,6 +99,11 @@ void Constants::Init(Local<Object> target) {
   CONST_ENUM(GC_PR_BGD)
   CONST_ENUM(GC_PR_FGD)
 
+  CONST_ENUM(CHAIN_APPROX_NONE)
+  CONST_ENUM(CHAIN_APPROX_SIMPLE)
+  CONST_ENUM(CHAIN_APPROX_TC89_L1)
+  CONST_ENUM(CHAIN_APPROX_TC89_KCOS)
+
   target->Set(Nan::New("Constants").ToLocalChecked(), obj);
 }
 
