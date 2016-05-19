@@ -2640,7 +2640,7 @@ NAN_METHOD(Matrix::Where) {
 	  for (int i = 0; i < len; i++) {
 		  r = r || (pixel == *(p + i));
 	  }
-	  pixel = r ? 255 : 0;
+	  pixel = r ? x : y;
   });
 
   return;
