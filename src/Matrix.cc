@@ -1,6 +1,7 @@
 #include "Contours.h"
 #include "Matrix.h"
 #include "OpenCV.h"
+#include "Rect.h"
 #include <string.h>
 #include <nan.h>
 
@@ -112,6 +113,7 @@ void Matrix::Init(Local<Object> target) {
   Nan::SetPrototypeMethod(ctor, "release", Release);
   Nan::SetPrototypeMethod(ctor, "subtract", Subtract);
   Nan::SetPrototypeMethod(ctor, "where", Where);
+  Nan::SetPrototypeMethod(ctor, "subImage", SubImage);
 
   target->Set(Nan::New("Matrix").ToLocalChecked(), ctor->GetFunction());
 };
@@ -2615,12 +2617,12 @@ NAN_METHOD(Matrix::Where) {
 	Nan::ThrowTypeError("Invalid arguments type");
   }
   std::vector<uchar> cond;
-  if (info[0]->IsArray()) {	  
+  if (info[0]->IsArray()) {
 	  Local<Array> valArray = Local<Array> ::Cast(info[0]->ToObject());
 	  const int length = valArray->Length();
 	  for (int i = 0; i < length; i++) {
 		  cond.push_back((uchar)valArray->Get(i)->NumberValue());
-	  }	  
+	  }
   }
   else {
 	  cond.push_back((uchar)info[0]->NumberValue());
@@ -2631,7 +2633,7 @@ NAN_METHOD(Matrix::Where) {
   int width = self->mat.size().width;
   int height = self->mat.size().height;
 
-  self->mat.forEach<uchar>([cond](uchar &pixel, const int * position) -> void {	  
+  self->mat.forEach<uchar>([cond](uchar &pixel, const int * position) -> void {
 	  static const uchar *p = cond.data();
 	  static const int len = cond.size();
 	  bool r = false;
@@ -2640,6 +2642,23 @@ NAN_METHOD(Matrix::Where) {
 	  }
 	  pixel = r ? 255 : 0;
   });
-   
+
   return;
+}
+
+NAN_METHOD(Matrix::SubImage) {
+  SETUP_FUNCTION(Matrix)
+
+  Local<Object> img_to_return =
+      Nan::New(Matrix::constructor)->GetFunction()->NewInstance();
+  Matrix *img = Nan::ObjectWrap::Unwrap<Matrix>(img_to_return);
+  cv::Rect roi = cv::Rect(0, 0, self->mat.cols, self->mat.rows);
+  if(info.Length() == 1) {
+    Rect *r = Nan::ObjectWrap::Unwrap<Rect>(info[0]->ToObject());
+    roi = cv::Rect(r->rect.x, r->rect.y, r->rect.width, r->rect.height);
+  }
+
+  img->mat = cv::Mat(self->mat, roi);
+
+  info.GetReturnValue().Set(img_to_return);
 }

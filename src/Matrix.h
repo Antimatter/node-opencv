@@ -130,6 +130,7 @@ public:
   JSFUNC(Subtract)
 
   JSFUNC(Where)
+  JSFUNC(SubImage)
   /*
    static Handle<Value> Val(const Arguments& info);
    static Handle<Value> RowRange(const Arguments& info);
