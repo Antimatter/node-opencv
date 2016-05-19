@@ -2630,10 +2630,10 @@ NAN_METHOD(Matrix::Where) {
   uchar x = (uchar)(info[1]->NumberValue());
   uchar y = (uchar)(info[2]->NumberValue());
 
-  int width = self->mat.size().width;
-  int height = self->mat.size().height;
+  //int width = self->mat.size().width;
+  //int height = self->mat.size().height;
 
-  self->mat.forEach<uchar>([cond](uchar &pixel, const int * position) -> void {
+  self->mat.forEach<uchar>([cond,x,y](uchar &pixel, const int * position) -> void {
 	  static const uchar *p = cond.data();
 	  static const int len = cond.size();
 	  bool r = false;
