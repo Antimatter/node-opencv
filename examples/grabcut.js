@@ -18,7 +18,9 @@ function testGrabcut(img){
       console.log('mask seed rect: [', rect.x, rect.y, rect.width, rect.height, ']')
 
       var r = cv.imgproc.grabCut(im, mask, rect, bgdmodel, fgdmodel, 1, cv.Constants.GC_INIT_WITH_RECT);
+      var dgd = bgdmodel.getData()
           r = cv.imgproc.grabCut(im, mask, rect, bgdmodel, fgdmodel, 1, cv.Constants.GC_INIT_WITH_MASK);
+
       var filtered = filterMask(r._mask)
       var blended = blendImage(im, filtered)
       var win1 = new cv.NamedWindow('Video1', 0)

@@ -6,7 +6,7 @@
 //                  InputOutputArray _bgdModel, InputOutputArray _fgdModel,
 //                  int iterCount, int mode )
 // cv::grabCut
-NAN_METHOD(ImgProc::grabCut) {
+NAN_METHOD(ImgProc::GrabCut) {
   Nan::EscapableHandleScope scope;
   v8::Local<v8::Object> objReturn = Nan::New<v8::Object>();
   try {

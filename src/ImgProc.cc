@@ -10,7 +10,7 @@ void ImgProc::Init(Local<Object> target) {
   Nan::SetMethod(obj, "initUndistortRectifyMap", InitUndistortRectifyMap);
   Nan::SetMethod(obj, "remap", Remap);
   Nan::SetMethod(obj, "getStructuringElement", GetStructuringElement);
-  Nan::SetMethod(obj, "grabCut", grabCut);
+  Nan::SetMethod(obj, "grabCut", GrabCut);
 
   target->Set(Nan::New("imgproc").ToLocalChecked(), obj);
 }
