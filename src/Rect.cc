@@ -43,8 +43,8 @@ NAN_METHOD(Rect::New) {
     height = info[3]->NumberValue();
   }
   Rect *rect = new Rect(x, y, width, height);
-  rect->Wrap(info.Holder());
-  info.GetReturnValue().Set(info.Holder());
+  rect->Wrap(info.This());
+  info.GetReturnValue().Set(info.This());
 }
 
 NAN_GETTER(Rect::GetX) {
