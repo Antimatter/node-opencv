@@ -8,10 +8,8 @@
 // cv::grabCut
 NAN_METHOD(ImgProc::grabCut) {
   Nan::EscapableHandleScope scope;
-
+  v8::Local<v8::Object> objReturn = Nan::New<v8::Object>();
   try {
-    // Get the arguments
-
     // Arg 0 is the image
     Matrix* m0 = Nan::ObjectWrap::Unwrap<Matrix>(info[0]->ToObject());
     cv::Mat _img = m0->mat;
@@ -20,6 +18,7 @@ NAN_METHOD(ImgProc::grabCut) {
     Matrix* m1 = Nan::ObjectWrap::Unwrap<Matrix>(info[1]->ToObject());
     cv::Mat _mask = m1->mat;
 
+    // Arg 2 is the rect
     Rect* m2 = Nan::ObjectWrap::Unwrap<Rect>(info[2]->ToObject());
     cv::Rect rect = m2->rect;
 
@@ -37,22 +36,22 @@ NAN_METHOD(ImgProc::grabCut) {
     // Arg 6 is the mode
     int mode = (int) (info[6]->NumberValue());
 
-    // Make an mat to hold the result image
-    cv::Mat outputImage;
-
     //GrabCut
     cv::grabCut(_img, _mask, rect, _bgdModel, _fgdModel, iterCount, mode);
 
     // Wrap the output image
     Local<Object> outMatrixWrap = Nan::New(Matrix::constructor)->GetFunction()->NewInstance();
     Matrix *outMatrix = Nan::ObjectWrap::Unwrap<Matrix>(outMatrixWrap);
-    outMatrix->mat = _mask;
+    outMatrix->mat = _mask.clone();
 
-    // Return the output image
-    info.GetReturnValue().Set(outMatrixWrap);
+    objReturn->Set(Nan::New("_mask").ToLocalChecked(), outMatrixWrap);
+    objReturn->Set(Nan::New("imageType").ToLocalChecked(), Nan::New(_img.type()));
+
+    info.GetReturnValue().Set(objReturn);
   } catch (cv::Exception &e) {
     const char *err_msg = e.what();
-    Nan::ThrowError(err_msg);
+    objReturn->Set(Nan::New("error").ToLocalChecked(), Nan::New(err_msg).ToLocalChecked());
+    info.GetReturnValue().Set(objReturn);
     return;
   }
 }

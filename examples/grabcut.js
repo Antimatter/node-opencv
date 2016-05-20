@@ -5,29 +5,111 @@ function testGrabcut(img){
       console.log(err)
       return
     }
-    cv.encPngDataURL(im, function(err, dataUrl){
-      if(err){
-        console.log('err')
+
+    function gc(im, args){
+      var sz = im.size()
+      var rect = new cv.Rect(args.rect[0], args.rect[1], args.rect[2], args.rect[3]);
+      var bgdmodel = new cv.Matrix.Zeros(1, 65, cv.Constants.CV_64FC1);
+      var fgdmodel = new cv.Matrix.Zeros(1, 65, cv.Constants.CV_64FC1);
+      var mask = new cv.Matrix.Zeros(sz[0], sz[1], cv.Constants.CV_8UC1);
+
+      console.log('[rows, cols]: ', sz);
+      console.log('args.rect: ', args.rect)
+      console.log('mask seed rect: [', rect.x, rect.y, rect.width, rect.height, ']')
+
+      var r = cv.imgproc.grabCut(im, mask, rect, bgdmodel, fgdmodel, 1, cv.Constants.GC_INIT_WITH_RECT);
+          r = cv.imgproc.grabCut(im, mask, rect, bgdmodel, fgdmodel, 1, cv.Constants.GC_INIT_WITH_MASK);
+      var filtered = filterMask(r._mask)
+      var blended = blendImage(im, filtered)
+      var win1 = new cv.NamedWindow('Video1', 0)
+      if (im.size()[0] > 0 && im.size()[1] > 0) {
+        win1.show(blended);
       }
-      cv.fromDataUrl(dataUrl, function(err, im2){
-        var win2 = new cv.NamedWindow('Video2', 0)
-        if (im.size()[0] > 0 && im.size()[1] > 0){
-          win2.show(im2);
-        }
-        win2.blockingWaitKey(0, 5000);
-      })
-
-
+      win1.blockingWaitKey(0, 500);
+    }
+    gc(im, {
+      rect: [220, 17, 279, 287]
     })
+    gc(im,{
+      rect: [220, 17, 279, 287]
+    })
+    /*
+    rect = new cv.Rect(220, 17, 279, 287)
+    bgdmodel = new cv.Matrix.Zeros(1, 65, cv.Constants.CV_64FC1);
+    fgdmodel = new cv.Matrix.Zeros(1, 65, cv.Constants.CV_64FC1);
+    mask = new cv.Matrix.Zeros(sz[0], sz[1], cv.Constants.CV_8UC1);
+    var s = cv.imgproc.grabCut(im, mask, rect, bgdmodel, fgdmodel, 1, cv.Constants.GC_INIT_WITH_RECT);
+    filtered = filterMask(s)
+    blended = blendImage(im, filtered)
+
     var win1 = new cv.NamedWindow('Video1', 0)
     if (im.size()[0] > 0 && im.size()[1] > 0) {
-      win1.show(im);
+      win1.show(blended);
     }
     win1.blockingWaitKey(0, 500);
+    */
 
   })
 }
 
+function filterMask(_mask) {
+  // _mask has been filled with 255 on GC_FGD and GC_PR_FGD
+  var width = _mask.width();
+  var height = _mask.height();
+  var maxArea = 0,
+    maxCoutourIndex = 0;
+  if (width < 1 || height < 1) {
+    throw new Error('Image has no size');
+  }
+  _mask.where([cv.Constants.GC_FGD, cv.Constants.GC_PR_FGD], 255, 0)
+
+  var contours = _mask.findContours(cv.Constants.RETR_EXTERNAL, cv.Constants.CHAIN_APPROX_SIMPLE)
+  console.log('contours: ' + contours.size())
+  for (var index = 0; index < contours.size(); index++) {
+    var area = contours.area(index)
+    if (area > maxArea) {
+      console.log(area)
+      maxArea = area;
+      maxCoutourIndex = index;
+    }
+  }
+  var c = contours.minAreaRect(maxCoutourIndex)
+  console.log(c)
+  var mask = new cv.Matrix.Zeros(height, width, cv.Constants.CV_8UC1);
+  mask.drawContour(contours, maxCoutourIndex, [255], -1)
+
+  return mask;
+}
+
+function blendImage(_img, mask) {
+  var width = mask.width();
+  var height = mask.height();
+  var b = new cv.Matrix.Zeros(height, width, cv.Constants.CV_8UC1)
+  var maskImage = new cv.Matrix.Zeros(height, width, cv.Constants.CV_8UC3)
+  maskImage.merge([b, b, mask])
+
+  var blend = new cv.Matrix.Zeros(height, width, cv.Constants.CV_8UC3)
+  blend.addWeighted(_img, 0.8, maskImage, 0.2)
+
+  return blend
+}
+
+function testEncode(im) {
+  cv.encPngDataURL(im, function (err, dataUrl) {
+    if (err) {
+      console.log('err')
+    }
+    cv.fromDataUrl(dataUrl, function (err, im2) {
+      var win2 = new cv.NamedWindow('Video2', 0)
+      if (im.size()[0] > 0 && im.size()[1] > 0) {
+        win2.show(im2);
+      }
+      win2.blockingWaitKey(0, 5000);
+    })
+
+
+  })
+}
 function testSubImage(eleImg){
   cv.fromDataUrl(eleImg.src, function(err, im){
     var img = im.subImage(new cv.Rect(50, 50, 200, 200))
@@ -48,7 +130,7 @@ function grabCutConstants(){
 
 process.nextTick(function(){
   testGrabcut(img)
-  testSubImage(img)
+  //testSubImage(img)
 })
 
 var img = {
