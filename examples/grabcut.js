@@ -40,6 +40,7 @@ function testSubImage(eleImg){
 }
 
 process.nextTick(function(){
+  testGrabcut(img)
   testSubImage(img)
 })
 

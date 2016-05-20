@@ -31,14 +31,15 @@ NAN_METHOD(OpenCV::FromDataURL) {
     mat = cv::imdecode(*mbuf, CV_LOAD_IMAGE_UNCHANGED);
 
     free(dest);
-    img->mat = mat;
+    img->mat = mat;	
   } catch (cv::Exception& e) {
     argv[0] = Nan::Error(e.what());
     argv[1] = Nan::Null();
   }
 
   Nan::TryCatch try_catch;
-  cb->Call(Nan::GetCurrentContext()->Global(), 2, argv);
+  //cb->Call(Nan::GetCurrentContext()->Global(), 2, argv);
+  Nan::MakeCallback(Nan::GetCurrentContext()->Global(), cb, 2, argv);
 
   if (try_catch.HasCaught()) {
     Nan::FatalException(try_catch);
