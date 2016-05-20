@@ -2632,7 +2632,9 @@ NAN_METHOD(Matrix::Where) {
 
   //int width = self->mat.size().width;
   //int height = self->mat.size().height;
-  cv::Mat filtered = self->mat.clone();
+  cv::Mat filtered;
+  self->mat.copyTo(filtered);
+
   filtered.forEach<uchar>([cond,x,y](uchar &pixel, const int * position) -> void {
 	  static const uchar *p = cond.data();
 	  static const int len = cond.size();
