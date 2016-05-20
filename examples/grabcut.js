@@ -18,11 +18,11 @@ function testGrabcut(img){
       console.log('mask seed rect: [', rect.x, rect.y, rect.width, rect.height, ']')
 
       var r = cv.imgproc.grabCut(im, mask, rect, bgdmodel, fgdmodel, 1, cv.Constants.GC_INIT_WITH_RECT);
-      var dgd = bgdmodel.getData()
-          r = cv.imgproc.grabCut(im, mask, rect, bgdmodel, fgdmodel, 1, cv.Constants.GC_INIT_WITH_MASK);
+      var s = cv.imgproc.grabCut(im, r._mask, rect, r._bgdModel, r._fgdModel, 1, cv.Constants.GC_INIT_WITH_MASK);
 
-      var filtered = filterMask(r._mask)
+      var filtered = filterMask(s._mask)
       var blended = blendImage(im, filtered)
+
       var win1 = new cv.NamedWindow('Video1', 0)
       if (im.size()[0] > 0 && im.size()[1] > 0) {
         win1.show(blended);
@@ -54,16 +54,16 @@ function testGrabcut(img){
   })
 }
 
-function filterMask(_mask) {
+function filterMask(_maskin) {
   // _mask has been filled with 255 on GC_FGD and GC_PR_FGD
-  var width = _mask.width();
-  var height = _mask.height();
+  var width = _maskin.width();
+  var height = _maskin.height();
   var maxArea = 0,
     maxCoutourIndex = 0;
   if (width < 1 || height < 1) {
     throw new Error('Image has no size');
   }
-  _mask.where([cv.Constants.GC_FGD, cv.Constants.GC_PR_FGD], 255, 0)
+  var _mask = _maskin.where([cv.Constants.GC_FGD, cv.Constants.GC_PR_FGD], 255, 0)
 
   var contours = _mask.findContours(cv.Constants.RETR_EXTERNAL, cv.Constants.CHAIN_APPROX_SIMPLE)
   console.log('contours: ' + contours.size())

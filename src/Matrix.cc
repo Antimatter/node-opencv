@@ -2632,8 +2632,8 @@ NAN_METHOD(Matrix::Where) {
 
   //int width = self->mat.size().width;
   //int height = self->mat.size().height;
-
-  self->mat.forEach<uchar>([cond,x,y](uchar &pixel, const int * position) -> void {
+  cv::Mat filtered = self->mat.clone();
+  filtered.forEach<uchar>([cond,x,y](uchar &pixel, const int * position) -> void {
 	  static const uchar *p = cond.data();
 	  static const int len = cond.size();
 	  bool r = false;
@@ -2643,6 +2643,10 @@ NAN_METHOD(Matrix::Where) {
 	  pixel = r ? x : y;
   });
 
+  Local<Object> _maskOut = Nan::New(Matrix::constructor)->GetFunction()->NewInstance();
+  Matrix *_maskMat = Nan::ObjectWrap::Unwrap<Matrix>(_maskOut);
+  _maskMat->mat = filtered;
+  info.GetReturnValue().Set(_maskOut);
   return;
 }
 

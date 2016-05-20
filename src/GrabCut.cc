@@ -16,7 +16,7 @@ NAN_METHOD(ImgProc::GrabCut) {
 
     // Arg 1 is the _mask matrix
     Matrix* m1 = Nan::ObjectWrap::Unwrap<Matrix>(info[1]->ToObject());
-    cv::Mat _mask = m1->mat;
+    cv::Mat _mask = m1->mat.clone();
 
     // Arg 2 is the rect
     Rect* m2 = Nan::ObjectWrap::Unwrap<Rect>(info[2]->ToObject());
@@ -24,11 +24,11 @@ NAN_METHOD(ImgProc::GrabCut) {
 
     // Arg 3 is the _bgdModel
     Matrix* m3 = Nan::ObjectWrap::Unwrap<Matrix>(info[3]->ToObject());
-    cv::Mat _bgdModel = m3->mat;
+    cv::Mat _bgdModel = m3->mat.clone();
 
     // Arg 4 is the _fgdModel
     Matrix* m4 = Nan::ObjectWrap::Unwrap<Matrix>(info[4]->ToObject());
-    cv::Mat _fgdModel = m4->mat;
+    cv::Mat _fgdModel = m4->mat.clone();
 
     // Arg 5 is the iterCount
     int iterCount = (int)(info[5]->NumberValue());
@@ -39,12 +39,21 @@ NAN_METHOD(ImgProc::GrabCut) {
     //GrabCut
     cv::grabCut(_img, _mask, rect, _bgdModel, _fgdModel, iterCount, mode);
 
-    // Wrap the output image
-    Local<Object> outMatrixWrap = Nan::New(Matrix::constructor)->GetFunction()->NewInstance();
-    Matrix *outMatrix = Nan::ObjectWrap::Unwrap<Matrix>(outMatrixWrap);
-    outMatrix->mat = _mask.clone();
+    Local<Object> _maskOut = Nan::New(Matrix::constructor)->GetFunction()->NewInstance();
+    Matrix *_maskMat = Nan::ObjectWrap::Unwrap<Matrix>(_maskOut);
+    _maskMat->mat = _mask.clone();
 
-    objReturn->Set(Nan::New("_mask").ToLocalChecked(), outMatrixWrap);
+    Local<Object> _bgdModelOut = Nan::New(Matrix::constructor)->GetFunction()->NewInstance();
+    Matrix *_bgdModelMat = Nan::ObjectWrap::Unwrap<Matrix>(_bgdModelOut);
+    _bgdModelMat->mat = _bgdModel.clone();
+
+    Local<Object> _fgdModelOut = Nan::New(Matrix::constructor)->GetFunction()->NewInstance();
+    Matrix *_fgdModelMat = Nan::ObjectWrap::Unwrap<Matrix>(_fgdModelOut);
+    _fgdModelMat->mat = _fgdModel.clone();
+
+    objReturn->Set(Nan::New("_mask").ToLocalChecked(), _maskOut);
+    objReturn->Set(Nan::New("_bgdModel").ToLocalChecked(), _bgdModelOut);
+    objReturn->Set(Nan::New("_fgdModel").ToLocalChecked(), _fgdModelOut);
     objReturn->Set(Nan::New("imageType").ToLocalChecked(), Nan::New(_img.type()));
 
     info.GetReturnValue().Set(objReturn);
