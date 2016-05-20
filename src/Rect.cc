@@ -13,11 +13,11 @@ void Rect::Init(Local<Object> target) {
   ctor->SetClassName(Nan::New("Rect").ToLocalChecked());
 
   // Prototype
-  Local<ObjectTemplate> proto = ctor->PrototypeTemplate();
-  Nan::SetAccessor(proto, Nan::New("x").ToLocalChecked(), GetX, RaiseImmutable);
-  Nan::SetAccessor(proto, Nan::New("y").ToLocalChecked(), GetY, RaiseImmutable);
-  Nan::SetAccessor(proto, Nan::New("width").ToLocalChecked(), GetWidth, RaiseImmutable);
-  Nan::SetAccessor(proto, Nan::New("height").ToLocalChecked(), GetHeight, RaiseImmutable);
+  Local<ObjectTemplate> instance = ctor->InstanceTemplate();
+  Nan::SetAccessor(instance, Nan::New("x").ToLocalChecked(), GetX, RaiseImmutable);
+  Nan::SetAccessor(instance, Nan::New("y").ToLocalChecked(), GetY, RaiseImmutable);
+  Nan::SetAccessor(instance, Nan::New("width").ToLocalChecked(), GetWidth, RaiseImmutable);
+  Nan::SetAccessor(instance, Nan::New("height").ToLocalChecked(), GetHeight, RaiseImmutable);
 
   target->Set(Nan::New("Rect").ToLocalChecked(), ctor->GetFunction());
 };
@@ -48,33 +48,28 @@ NAN_METHOD(Rect::New) {
 }
 
 NAN_GETTER(Rect::GetX) {
-  Nan::HandleScope scope;
-  Rect *rect = Nan::ObjectWrap::Unwrap<Rect>(info.This());
+  Rect *rect = Nan::ObjectWrap::Unwrap<Rect>(info.Holder());
   info.GetReturnValue().Set(Nan::New<Number>(rect->rect.x));
 }
 
 NAN_GETTER(Rect::GetY) {
-  Nan::HandleScope scope;
-  Rect *rect = Nan::ObjectWrap::Unwrap<Rect>(info.This());
+  Rect *rect = Nan::ObjectWrap::Unwrap<Rect>(info.Holder());
   info.GetReturnValue().Set(Nan::New<Number>(rect->rect.y));
 }
 
 NAN_GETTER(Rect::GetWidth) {
-  Nan::HandleScope scope;
-  Rect *rect = Nan::ObjectWrap::Unwrap<Rect>(info.This());
+  Rect *rect = Nan::ObjectWrap::Unwrap<Rect>(info.Holder());
   info.GetReturnValue().Set(Nan::New<Number>(rect->rect.width));
 }
 
 NAN_GETTER(Rect::GetHeight) {
-  Nan::HandleScope scope;
-  Rect *rect = Nan::ObjectWrap::Unwrap<Rect>(info.This());
+  Rect *rect = Nan::ObjectWrap::Unwrap<Rect>(info.Holder());
   info.GetReturnValue().Set(Nan::New<Number>(rect->rect.height));
 }
 
 NAN_SETTER(Rect::RaiseImmutable) {
   Nan::ThrowTypeError("Rect is immutable");
 }
-
 
 Rect::Rect(double x, double y, double width, double height) :
     node_opencv::Rect() {

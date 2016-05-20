@@ -39,6 +39,13 @@ function testSubImage(eleImg){
   })
 }
 
+function grabCutConstants(){
+  console.log('GC_BGD: ' + cv.Constants.GC_BGD)
+  console.log('GC_FGD: ' + cv.Constants.GC_FGD)
+  console.log('GC_PR_BGD: ' + cv.Constants.GC_PR_BGD)
+  console.log('GC_PR_FGD: ' + cv.Constants.GC_PR_FGD)
+}
+
 process.nextTick(function(){
   testGrabcut(img)
   testSubImage(img)

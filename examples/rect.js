@@ -13,16 +13,18 @@ function matrix_where() {
 
 }
 
-/// test rect
+// test rect
 function matrix_rect() {
   var r = new cv.Rect(0, 0, 1, 1)
   var p = new cv.Point(0, 3)
   console.log(r.width)
-  console.log('GC_BGD: ' + cv.Constants.GC_BGD)
-  console.log('GC_FGD: ' + cv.Constants.GC_FGD)
-  console.log('GC_PR_BGD: ' + cv.Constants.GC_PR_BGD)
-  console.log('GC_PR_FGD: ' + cv.Constants.GC_PR_FGD)
+  console.log(r.x)
+  r = new cv.Rect(3, 4, 5, 76)
+  console.log(r.y)
+  console.log(r.height)
 
 }
-matrix_where()
+
+
+//matrix_where()
 matrix_rect()
