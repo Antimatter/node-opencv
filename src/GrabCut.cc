@@ -16,7 +16,8 @@ NAN_METHOD(ImgProc::GrabCut) {
 
     // Arg 1 is the _mask matrix
     Matrix* m1 = Nan::ObjectWrap::Unwrap<Matrix>(info[1]->ToObject());
-    cv::Mat _mask = m1->mat.clone();
+    cv::Mat _mask;
+    m1->mat.copyTo(_mask);
 
     // Arg 2 is the rect
     Rect* m2 = Nan::ObjectWrap::Unwrap<Rect>(info[2]->ToObject());
@@ -24,11 +25,13 @@ NAN_METHOD(ImgProc::GrabCut) {
 
     // Arg 3 is the _bgdModel
     Matrix* m3 = Nan::ObjectWrap::Unwrap<Matrix>(info[3]->ToObject());
-    cv::Mat _bgdModel = m3->mat.clone();
+    cv::Mat _bgdModel;
+    m3->mat.copyTo(_bgdModel);
 
     // Arg 4 is the _fgdModel
     Matrix* m4 = Nan::ObjectWrap::Unwrap<Matrix>(info[4]->ToObject());
-    cv::Mat _fgdModel = m4->mat.clone();
+    cv::Mat _fgdModel;
+    m4->mat.copyTo(_fgdModel);
 
     // Arg 5 is the iterCount
     int iterCount = (int)(info[5]->NumberValue());
@@ -41,15 +44,15 @@ NAN_METHOD(ImgProc::GrabCut) {
 
     Local<Object> _maskOut = Nan::New(Matrix::constructor)->GetFunction()->NewInstance();
     Matrix *_maskMat = Nan::ObjectWrap::Unwrap<Matrix>(_maskOut);
-    _maskMat->mat = _mask.clone();
+    _maskMat->mat = _mask;
 
     Local<Object> _bgdModelOut = Nan::New(Matrix::constructor)->GetFunction()->NewInstance();
     Matrix *_bgdModelMat = Nan::ObjectWrap::Unwrap<Matrix>(_bgdModelOut);
-    _bgdModelMat->mat = _bgdModel.clone();
+    _bgdModelMat->mat = _bgdModel;
 
     Local<Object> _fgdModelOut = Nan::New(Matrix::constructor)->GetFunction()->NewInstance();
     Matrix *_fgdModelMat = Nan::ObjectWrap::Unwrap<Matrix>(_fgdModelOut);
-    _fgdModelMat->mat = _fgdModel.clone();
+    _fgdModelMat->mat = _fgdModel;
 
     objReturn->Set(Nan::New("_mask").ToLocalChecked(), _maskOut);
     objReturn->Set(Nan::New("_bgdModel").ToLocalChecked(), _bgdModelOut);
