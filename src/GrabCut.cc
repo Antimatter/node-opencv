@@ -34,10 +34,14 @@ NAN_METHOD(ImgProc::GrabCut) {
     m4->mat.copyTo(_fgdModel);
 
     // Arg 5 is the iterCount
-    int iterCount = (int)(info[5]->NumberValue());
+    int iterCount = info[5]->IntegerValue();
 
     // Arg 6 is the mode
-    int mode = (int) (info[6]->NumberValue());
+    int mode = info[6]->IntegerValue();
+
+    printf("\tinput image: %d %d\n", _img.cols, _img.rows);
+    printf("\tinput rect: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
+    printf("iterCount: %d, mode: %d\n", iterCount, mode);
 
     //GrabCut
     cv::grabCut(_img, _mask, rect, _bgdModel, _fgdModel, iterCount, mode);
@@ -54,10 +58,17 @@ NAN_METHOD(ImgProc::GrabCut) {
     Matrix *_fgdModelMat = Nan::ObjectWrap::Unwrap<Matrix>(_fgdModelOut);
     _fgdModelMat->mat = _fgdModel;
 
-    objReturn->Set(Nan::New("_mask").ToLocalChecked(), _maskOut);
+
+    Local<v8::Array> _rect = Nan::New<v8::Array>(4);
+    _rect->Set(0, Nan::New(rect.x));
+    _rect->Set(1, Nan::New(rect.y));
+    _rect->Set(2, Nan::New(rect.width));
+    _rect->Set(3, Nan::New(rect.height));
+    objReturn->Set(Nan::New("rect").ToLocalChecked(), _rect);
+
+    objReturn->Set(Nan::New("_mask").ToLocalChecked(),     _maskOut);
     objReturn->Set(Nan::New("_bgdModel").ToLocalChecked(), _bgdModelOut);
     objReturn->Set(Nan::New("_fgdModel").ToLocalChecked(), _fgdModelOut);
-    objReturn->Set(Nan::New("imageType").ToLocalChecked(), Nan::New(_img.type()));
 
     info.GetReturnValue().Set(objReturn);
   } catch (cv::Exception &e) {

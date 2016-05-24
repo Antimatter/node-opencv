@@ -10,73 +10,94 @@ var flag = process.argv[2] || "--exists";
 // then selected by |export PKG_CONFIG_OPENCV3=1| before building node-opencv.
 var opencv = process.env.PKG_CONFIG_OPENCV3 === "1" ? "opencv3" : '"opencv >= 2.3.1"';
 
-function main(){
-    //Try using pkg-config, but if it fails and it is on Windows, try the fallback
-    exec("pkg-config " + opencv + " " + flag, function(error, stdout, stderr){
-        if(error){
-            if(process.platform === "win32"){
-                fallback();
-            }
-            else{
-                throw new Error("ERROR: failed to run: pkg-config", opencv, flag);
-            }
-        }
-        else{
-            console.log(stdout);
-        }
-    });
+function main() {
+  //Try using pkg-config, but if it fails and it is on Windows, try the fallback
+  exec("pkg-config " + opencv + " " + flag, function (error, stdout, stderr) {
+    if (error) {
+      if (process.platform === "win32") {
+        fallback();
+      }
+      else {
+        throw new Error("ERROR: failed to run: pkg-config", opencv, flag);
+      }
+    }
+    else {
+      console.log(stdout);
+    }
+  });
 }
 
 //======================Windows Specific=======================================
 
-function fallback(){
-    exec("echo %OPENCV_DIR%", function(error, stdout, stderr){
-        stdout = cleanupEchoOutput(stdout);
-        if(error){
-            throw new Error("ERROR: There was an error reading OPENCV_DIR");
-        }
-        else if(stdout === "%OPENCV_DIR%") {
-            throw new Error("ERROR: OPENCV_DIR doesn't seem to be defined");
-        }
-        else {
-            printPaths(stdout);
-        }
-    });
-}
-
-function printPaths(opencvPath){
-    if(flag === "--cflags") {
-        console.log("\"" + opencvPath + "\\include\"");
-        console.log("\"" + opencvPath + "\\include\\opencv\"");
-        console.log("\"" + opencvPath + "\\include\\opencv2\"");
+function fallback() {
+  exec("echo %OPENCV_DIR%", function (error, stdout, stderr) {
+    stdout = cleanupEchoOutput(stdout);
+    if (error) {
+      throw new Error("ERROR: There was an error reading OPENCV_DIR");
     }
-    else if(flag === "--libs") {
-        var libPath = opencvPath + "\\lib\\";
-
-        fs.readdir(libPath, function(err, files){
-            if(err){
-                throw new Error("ERROR: couldn't read the lib directory " + err);
-            }
-
-            var libs = "";
-            for(var i = 0; i < files.length; i++){
-                if(getExtension(files[i]) === "lib"){
-                    libs = libs + " \"" + libPath + files[i] + "\" \r\n ";
-                }
-            }
-            console.log(libs);
-        });
+    else if (stdout === "%OPENCV_DIR%") {
+      throw new Error("ERROR: OPENCV_DIR doesn't seem to be defined");
     }
     else {
-        throw new Error("Error: unknown argument '" + flag + "'");
+      printPaths(stdout);
     }
+  });
 }
 
-function cleanupEchoOutput(s){
-    return s.slice(0, s.length - 2);
+function printPaths(opencvPath) {
+  if (flag === "--cflags") {
+    console.log("\"" + opencvPath + "\\include\"");
+    console.log("\"" + opencvPath + "\\include\\opencv\"");
+    console.log("\"" + opencvPath + "\\include\\opencv2\"");
+  }
+  else if (flag === "--libs") {
+    var libPath = opencvPath + "\\lib\\";
+    var ocvVer = parseCmakeVersionFile(opencvPath)
+    if (ocvVer < '3.0.0') {
+      //TODO: set vcxx dir according to msvs version
+      libPath = opencvPath + '\\' + process.arch + '\\vc14\\lib\\'
+    }
+    fs.readdir(libPath, function (err, files) {
+      if (err) {
+        throw new Error("ERROR: couldn't read the lib directory " + err);
+      }
+
+      var libs = "";
+      for (var i = 0; i < files.length; i++) {
+        if (getExtension(files[i]) === "lib") {
+          libs = libs + " \"" + libPath + files[i] + "\" \r\n ";
+        }
+      }
+      console.log(libs);
+    });
+  }
+  else {
+    throw new Error("Error: unknown argument '" + flag + "'");
+  }
 }
 
-function getExtension(s){
-    return s.substr(s.lastIndexOf(".") + 1);
+function cleanupEchoOutput(s) {
+  return s.slice(0, s.length - 2);
+}
+
+function getExtension(s) {
+  return s.substr(s.lastIndexOf(".") + 1);
+}
+
+function parseCmakeVersionFile(opencvPath) {
+  var version = 'unknown'
+  var versionFile = opencvPath + '\\OpenCVConfig-version.cmake'
+
+  try {
+    var contents = fs.readFileSync(versionFile, {encoding: 'utf8'}).replace('\r\n', '\n').split('\n')
+    var vstr = contents[0]
+    var start = vstr.indexOf('(') + 1
+    var end = vstr.indexOf(')')
+    vstr = vstr.substring(start, end).split(' ')
+    version = vstr[1]
+  } catch (e) {
+    console.log('Cannot read file: ', versionFile)
+  }
+  return version
 }
 main();

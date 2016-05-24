@@ -5,53 +5,44 @@ function testGrabcut(img){
       console.log(err)
       return
     }
-
-    function gc(im, args){
-      var sz = im.size()
-      var rect = new cv.Rect(args.rect[0], args.rect[1], args.rect[2], args.rect[3]);
-      var bgdmodel = new cv.Matrix.Zeros(1, 65, cv.Constants.CV_64FC1);
-      var fgdmodel = new cv.Matrix.Zeros(1, 65, cv.Constants.CV_64FC1);
-      var mask = new cv.Matrix.Zeros(sz[0], sz[1], cv.Constants.CV_8UC1);
-
-      console.log('[rows, cols]: ', sz);
-      console.log('args.rect: ', args.rect)
-      console.log('mask seed rect: [', rect.x, rect.y, rect.width, rect.height, ']')
-
-      var r = cv.imgproc.grabCut(im, mask, rect, bgdmodel, fgdmodel, 1, cv.Constants.GC_INIT_WITH_RECT);
-      var s = cv.imgproc.grabCut(im, r._mask, rect, r._bgdModel, r._fgdModel, 1, cv.Constants.GC_INIT_WITH_MASK);
-
-      var filtered = filterMask(s._mask)
-      var blended = blendImage(im, filtered)
-
-      var win1 = new cv.NamedWindow('Video1', 0)
-      if (im.size()[0] > 0 && im.size()[1] > 0) {
-        win1.show(blended);
-      }
-      win1.blockingWaitKey(0, 500);
-    }
     gc(im, {
-      rect: [220, 17, 279, 287]
+      rect: [172, 171, 247, 228]
     })
-    gc(im,{
-      rect: [220, 17, 279, 287]
-    })
-    /*
-    rect = new cv.Rect(220, 17, 279, 287)
-    bgdmodel = new cv.Matrix.Zeros(1, 65, cv.Constants.CV_64FC1);
-    fgdmodel = new cv.Matrix.Zeros(1, 65, cv.Constants.CV_64FC1);
-    mask = new cv.Matrix.Zeros(sz[0], sz[1], cv.Constants.CV_8UC1);
-    var s = cv.imgproc.grabCut(im, mask, rect, bgdmodel, fgdmodel, 1, cv.Constants.GC_INIT_WITH_RECT);
-    filtered = filterMask(s)
-    blended = blendImage(im, filtered)
-
-    var win1 = new cv.NamedWindow('Video1', 0)
-    if (im.size()[0] > 0 && im.size()[1] > 0) {
-      win1.show(blended);
-    }
-    win1.blockingWaitKey(0, 500);
-    */
-
   })
+}
+
+function gc(im, args){
+  var sz = im.size()
+  var rect = new cv.Rect(args.rect[0], args.rect[1], args.rect[2], args.rect[3]);
+  var bgdmodel = new cv.Matrix.Zeros(1, 65, cv.Constants.CV_64FC1);
+  var fgdmodel = new cv.Matrix.Zeros(1, 65, cv.Constants.CV_64FC1);
+  var mask = new cv.Matrix.Zeros(sz[0], sz[1], cv.Constants.CV_8UC1);
+
+  console.log('[rows, cols]: ', sz);
+  console.log('args.rect: ', args.rect)
+  console.log('mask seed rect: [', rect.x, rect.y, rect.width, rect.height, ']')
+
+  console.log('first grabcut')
+  var r = cv.imgproc.grabCut(im,    mask, rect,    bgdmodel,    fgdmodel, 3, cv.Constants.GC_INIT_WITH_RECT);
+  console.log('grabcut return rect: ' + r.rect)
+  // showImage(im)
+  //console.log('second grabcut')
+  //var s = cv.imgproc.grabCut(im, r._mask, rect, r._bgdModel, r._fgdModel, 1, cv.Constants.GC_INIT_WITH_MASK);
+  //showImage(im)
+
+  var filtered = filterMask(r._mask)
+  var blended = blendImage(im, filtered)
+  showImage(blended)
+
+  console.log('\n\n\n')
+}
+
+function showImage(img){
+  var win = new cv.NamedWindow('Image', 0)
+  if (img.size()[0] > 0 && img.size()[1] > 0) {
+    win.show(img);
+  }
+  win.blockingWaitKey(0, 30);
 }
 
 function filterMask(_maskin) {
@@ -59,7 +50,7 @@ function filterMask(_maskin) {
   var width = _maskin.width();
   var height = _maskin.height();
   var maxArea = 0,
-    maxCoutourIndex = 0;
+    maxCoutourIndex = -1;
   if (width < 1 || height < 1) {
     throw new Error('Image has no size');
   }
@@ -70,15 +61,17 @@ function filterMask(_maskin) {
   for (var index = 0; index < contours.size(); index++) {
     var area = contours.area(index)
     if (area > maxArea) {
-      console.log(area)
       maxArea = area;
       maxCoutourIndex = index;
     }
   }
-  var c = contours.minAreaRect(maxCoutourIndex)
-  console.log(c)
+
   var mask = new cv.Matrix.Zeros(height, width, cv.Constants.CV_8UC1);
-  mask.drawContour(contours, maxCoutourIndex, [255], -1)
+  if(maxCoutourIndex > -1) {
+    //var c = contours.minAreaRect(maxCoutourIndex)
+    //console.log('minAreaRect: ' , c)
+    mask.drawContour(contours, maxCoutourIndex, [255], -1)
+  }
 
   return mask;
 }
@@ -132,6 +125,11 @@ function grabCutConstants(){
 
 process.nextTick(function(){
   testGrabcut(img)
+  testGrabcut(img)
+  testGrabcut(img)
+  testGrabcut(img)
+  testGrabcut(img)
+
   //testSubImage(img)
 })
 

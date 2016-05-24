@@ -2627,23 +2627,27 @@ NAN_METHOD(Matrix::Where) {
   else {
 	  cond.push_back((uchar)info[0]->NumberValue());
   }
-  uchar x = (uchar)(info[1]->NumberValue());
-  uchar y = (uchar)(info[2]->NumberValue());
+  uchar left = (uchar)(info[1]->NumberValue());
+  uchar right = (uchar)(info[2]->NumberValue());
 
-  //int width = self->mat.size().width;
-  //int height = self->mat.size().height;
   cv::Mat filtered;
   self->mat.copyTo(filtered);
 
-  filtered.forEach<uchar>([cond,x,y](uchar &pixel, const int * position) -> void {
-	  static const uchar *p = cond.data();
-	  static const int len = cond.size();
-	  bool r = false;
-	  for (int i = 0; i < len; i++) {
-		  r = r || (pixel == *(p + i));
+  static const uchar *p = cond.data();
+  static const int len = cond.size();
+  for (int i = 0; i < filtered.rows; i++)
+  {
+	  uchar* Mi = filtered.ptr<uchar>(i);
+	  for (int j = 0; j < filtered.cols; j++)
+	  {
+		  uchar &pixel = Mi[j];
+		  bool r = false;
+		  for (int i = 0; i < len; i++) {
+			  r = r || (pixel == *(p + i));
+		  }
+		  pixel = r ? left : right;
 	  }
-	  pixel = r ? x : y;
-  });
+  }
 
   Local<Object> _maskOut = Nan::New(Matrix::constructor)->GetFunction()->NewInstance();
   Matrix *_maskMat = Nan::ObjectWrap::Unwrap<Matrix>(_maskOut);
@@ -2667,4 +2671,10 @@ NAN_METHOD(Matrix::SubImage) {
   img->mat = cv::Mat(self->mat, roi);
 
   info.GetReturnValue().Set(img_to_return);
+}
+
+NAN_METHOD(Matrix::Type) {
+  SETUP_FUNCTION(Matrix)
+
+  info.GetReturnValue().Set(Nan::New(self->mat.type()));
 }
