@@ -2685,25 +2685,21 @@ NAN_METHOD(Matrix::Where) {
 	const int len = cond.size();
 	for (int i = 0; i < filtered.rows; i++)
 	{
-		uchar* Mi = filtered.ptr<uchar>(i);
+		uchar* Mio = filtered.ptr<uchar>(i);
+		uchar* Mis = self->mat.ptr<uchar>(i);
 		for (int j = 0; j < filtered.cols; j++)
 		{
-			uchar* Mio = filtered.ptr<uchar>(i);
-			uchar* Mis = self->mat.ptr<uchar>(i);
-			for (int j = 0; j < filtered.cols; j++)
+			uchar spixel = Mis[j];
+			bool r = false;
+			for (int k = 0; k < len; k++)
 			{
-				uchar spixel = Mis[j];
-				bool r = false;
-				for (int k = 0; k < len; k++)
+				if (spixel == *(p + k))
 				{
-					if (spixel == *(p + k))
-					{
-						r = true;
-						break;
-					}
+					r = true;
+					break;
 				}
-				*(Mio + j) = r ? left : right;
 			}
+			*(Mio + j) = r ? left : right;
 		}
 	}
 

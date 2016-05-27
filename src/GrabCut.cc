@@ -15,8 +15,9 @@ NAN_METHOD(ImgProc::GrabCut) {
     cv::Mat _img = m0->mat;
     if(m0->mat.type() != CV_8UC1)
     {
-      std::vector<cv::Mat> vChannels(3);
-      for (unsigned int i = 0; i < L; i++) {
+		const int channels = 3;
+      std::vector<cv::Mat> vChannels(channels);
+      for (unsigned int i = 0; i < channels; i++) {
         vChannels[i] = m0->mat;
       }
       cv::merge(vChannels, _img);
