@@ -13,6 +13,11 @@ NAN_METHOD(ImgProc::GrabCut) {
     // Arg 0 is the image
     Matrix* m0 = Nan::ObjectWrap::Unwrap<Matrix>(info[0]->ToObject());
     cv::Mat _img = m0->mat;
+    if(m0->mat.type() != CV_8UC3)
+    {
+        m0->mat.convertTo(_img, CV_8UC3);      
+    }
+
 
     // Arg 1 is the _mask matrix
     Matrix* m1 = Nan::ObjectWrap::Unwrap<Matrix>(info[1]->ToObject());
@@ -39,9 +44,9 @@ NAN_METHOD(ImgProc::GrabCut) {
     // Arg 6 is the mode
     int mode = info[6]->IntegerValue();
 
-    printf("\tinput image: %d %d\n", _img.cols, _img.rows);
-    printf("\tinput rect: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
-    printf("iterCount: %d, mode: %d\n", iterCount, mode);
+    //printf("\tinput image: %d %d\n", _img.cols, _img.rows);
+    //printf("\tinput rect: %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
+    //printf("iterCount: %d, mode: %d\n", iterCount, mode);
 
     //GrabCut
     cv::grabCut(_img, _mask, rect, _bgdModel, _fgdModel, iterCount, mode);
