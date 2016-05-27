@@ -13,9 +13,13 @@ NAN_METHOD(ImgProc::GrabCut) {
     // Arg 0 is the image
     Matrix* m0 = Nan::ObjectWrap::Unwrap<Matrix>(info[0]->ToObject());
     cv::Mat _img = m0->mat;
-    if(m0->mat.type() != CV_8UC3)
+    if(m0->mat.type() != CV_8UC1)
     {
-        m0->mat.convertTo(_img, CV_8UC3);      
+      std::vector<cv::Mat> vChannels(3);
+      for (unsigned int i = 0; i < L; i++) {
+        vChannels[i] = self->mat;
+      }
+      cv::merge(vChannels, _img);
     }
 
 
