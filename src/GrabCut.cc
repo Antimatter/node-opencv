@@ -21,6 +21,8 @@ NAN_METHOD(ImgProc::GrabCut) {
 		{
 			vChannels[i] = m0->mat;
 		}
+		_img.release();
+		_img.create(m0->mat.size(), CV_8UC3);
 		cv::merge(vChannels, _img);
 	}
 
