@@ -12,15 +12,8 @@ NAN_METHOD(ImgProc::GrabCut) {
   try {
     // Arg 0 is the image
     Matrix* m0 = Nan::ObjectWrap::Unwrap<Matrix>(info[0]->ToObject());
-    cv::Mat _img(m0->mat.size(), CV_8UC3);
+    cv::Mat _img = m0->mat;
 
-	if (m0->mat.type() == CV_8UC1)
-	{
-		cv::cvtColor(m0->mat, _img, cv::COLOR_GRAY2RGB);
-	}else
-	{
-	    _img = m0->mat;
-	}
     // Arg 1 is the _mask matrix
     Matrix* m1 = Nan::ObjectWrap::Unwrap<Matrix>(info[1]->ToObject());
     cv::Mat _mask;
