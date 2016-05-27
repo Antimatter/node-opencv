@@ -114,6 +114,7 @@ void Matrix::Init(Local<Object> target) {
 	Nan::SetPrototypeMethod(ctor, "subtract", Subtract);
 	Nan::SetPrototypeMethod(ctor, "where", Where);
 	Nan::SetPrototypeMethod(ctor, "subImage", SubImage);
+	Nan::SetPrototypeMethod(ctor, "type", Type);
 
 	target->Set(Nan::New("Matrix").ToLocalChecked(), ctor->GetFunction());
 };
