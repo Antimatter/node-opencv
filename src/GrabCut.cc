@@ -13,16 +13,10 @@ NAN_METHOD(ImgProc::GrabCut) {
     // Arg 0 is the image
     Matrix* m0 = Nan::ObjectWrap::Unwrap<Matrix>(info[0]->ToObject());
     cv::Mat _img = m0->mat;
-	if (m0->mat.type() == CV_8UC1)
+	if (_img.type() == CV_8UC1)
 	{
-		const int channels = 3;
-		cv::Mat vChannels[channels] = { m0->mat, m0->mat, m0->mat };
-		_img.release();
-		_img.create(m0->mat.size(), CV_8UC3);
-		cv::merge(vChannels, channels, _img);
+		cv::cvtColor(m0->mat, _img, CV_8UC3);
 	}
-
-
     // Arg 1 is the _mask matrix
     Matrix* m1 = Nan::ObjectWrap::Unwrap<Matrix>(info[1]->ToObject());
     cv::Mat _mask;
