@@ -52,11 +52,11 @@ function printPaths(opencvPath) {
   }
   else if (flag === "--libs") {
     var libPath = opencvPath + "\\lib\\";
-    var ocvVer = parseCmakeVersionFile(opencvPath)
-    if (ocvVer < '3.0.0') {
-      //TODO: set vcxx dir according to msvs version
-      libPath = opencvPath + '\\' + process.arch + '\\vc14\\lib\\'
-    }
+    //var ocvVer = parseCmakeVersionFile(opencvPath)
+    //if (ocvVer < '3.0.0') {
+    //  //TODO: set vcxx dir according to msvs version
+    //  libPath = opencvPath + '\\' + process.arch + '\\vc14\\lib\\'
+    //}
     fs.readdir(libPath, function (err, files) {
       if (err) {
         throw new Error("ERROR: couldn't read the lib directory " + err);
