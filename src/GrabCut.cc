@@ -17,7 +17,7 @@ NAN_METHOD(ImgProc::GrabCut) {
     {
       std::vector<cv::Mat> vChannels(3);
       for (unsigned int i = 0; i < L; i++) {
-        vChannels[i] = self->mat;
+        vChannels[i] = m0->mat;
       }
       cv::merge(vChannels, _img);
     }
