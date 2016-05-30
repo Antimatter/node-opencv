@@ -71,6 +71,8 @@ public:
   static NAN_METHOD(FromDataURL);
 
   static NAN_METHOD(EncPngDataURL);
+
+  static NAN_METHOD(EncDataURL);
 };
 
 #endif

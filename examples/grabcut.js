@@ -127,8 +127,19 @@ function grabCutConstants(){
   console.log('GC_PR_FGD: ' + cv.Constants.GC_PR_FGD)
 }
 
+function testEncGrbcut(img) {
+  cv.fromDataUrl(img.src, function(err, im){
+    if(err){
+      console.log(err)
+      return
+    }
+    var a = cv.encDataUrl(im)
+    console.log(im.size())
+  })
+}
 process.nextTick(function(){
-  testGrabcut(singleChannelImg)
+  testEncGrbcut(img)
+  //testGrabcut(singleChannelImg)
   //testGrabcut(img)
   //testGrabcut(img)
   //testGrabcut(img)
