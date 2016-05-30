@@ -73,6 +73,8 @@ public:
   static NAN_METHOD(EncPngDataURL);
 
   static NAN_METHOD(EncDataURL);
+
+  static NAN_METHOD(DecDataURL);
 };
 
 #endif

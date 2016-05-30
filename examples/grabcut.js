@@ -137,8 +137,13 @@ function testEncGrbcut(img) {
     console.log(im.size())
   })
 }
+function testDecDataUrl(img) {
+  var im = cv.decDataUrl(img.src)
+  console.log(im.size())
+}
 process.nextTick(function(){
-  testEncGrbcut(img)
+  testDecDataUrl(img)
+
   //testGrabcut(singleChannelImg)
   //testGrabcut(img)
   //testGrabcut(img)

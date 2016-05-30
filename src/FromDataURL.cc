@@ -83,6 +83,36 @@ NAN_METHOD(OpenCV::EncPngDataURL) {
   return;
 }
 
+NAN_METHOD(OpenCV::DecDataURL) {
+	Nan::EscapableHandleScope scope;
+			
+	Local<Object> im_h = Nan::New(Matrix::constructor)->GetFunction()->NewInstance();
+	Matrix *img = Nan::ObjectWrap::Unwrap<Matrix>(im_h);
+	
+	try {
+		cv::Mat mat;
+
+		std::string src = std::string(*Nan::Utf8String(info[0]->ToString()));
+		size_t pos = src.find_first_of(',');
+		std::string b64s = src.substr(pos + 1);
+
+		const char* b64string = b64s.c_str();
+		size_t sourcelen = strlen(b64string);
+		char* dest = (char*)malloc(modp_b64_decode_len(sourcelen));
+		int len = modp_b64_decode(dest, b64string, sourcelen);
+
+		cv::Mat *mbuf = new cv::Mat(len, 1, CV_64FC1, dest);
+		mat = cv::imdecode(*mbuf, CV_LOAD_IMAGE_UNCHANGED);
+
+		free(dest);
+		img->mat = mat;
+
+		info.GetReturnValue().Set(im_h);
+	}catch (cv::Exception& e) {
+		const char *err_msg = e.what();
+		info.GetReturnValue().Set(Nan::New(err_msg).ToLocalChecked());
+	}
+}
 NAN_METHOD(OpenCV::EncDataURL){
  Nan::EscapableHandleScope scope;
 
