@@ -140,6 +140,7 @@ function testEncGrbcut(img) {
 function testDecDataUrl(img) {
   var im = cv.decDataUrl(img.src)
   console.log(im.size())
+  console.log(cv.decDataUrl('dasfdasjfsadfa'))
 }
 process.nextTick(function(){
   testDecDataUrl(img)
