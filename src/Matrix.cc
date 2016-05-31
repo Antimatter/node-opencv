@@ -4,6 +4,7 @@
 #include "Rect.h"
 #include <string.h>
 #include <nan.h>
+#include <fstream>
 
 Nan::Persistent<FunctionTemplate> Matrix::constructor;
 
@@ -115,6 +116,7 @@ void Matrix::Init(Local<Object> target) {
 	Nan::SetPrototypeMethod(ctor, "where", Where);
 	Nan::SetPrototypeMethod(ctor, "subImage", SubImage);
 	Nan::SetPrototypeMethod(ctor, "type", Type);
+	Nan::SetPrototypeMethod(ctor, "yml", YML);
 
 	target->Set(Nan::New("Matrix").ToLocalChecked(), ctor->GetFunction());
 };
@@ -2714,11 +2716,12 @@ NAN_METHOD(Matrix::Where) {
 NAN_METHOD(Matrix::SubImage) {
 	SETUP_FUNCTION(Matrix)
 
-		Local<Object> img_to_return =
-		Nan::New(Matrix::constructor)->GetFunction()->NewInstance();
+	Local<Object> img_to_return =
+	Nan::New(Matrix::constructor)->GetFunction()->NewInstance();
 	Matrix *img = Nan::ObjectWrap::Unwrap<Matrix>(img_to_return);
 	cv::Rect roi = cv::Rect(0, 0, self->mat.cols, self->mat.rows);
-	if (info.Length() == 1) {
+	if (info.Length() == 1)
+	{
 		Rect *r = Nan::ObjectWrap::Unwrap<Rect>(info[0]->ToObject());
 		roi = cv::Rect(r->rect.x, r->rect.y, r->rect.width, r->rect.height);
 	}
@@ -2731,5 +2734,33 @@ NAN_METHOD(Matrix::SubImage) {
 NAN_METHOD(Matrix::Type) {
 	SETUP_FUNCTION(Matrix)
 
-		info.GetReturnValue().Set(Nan::New(self->mat.type()));
+	info.GetReturnValue().Set(Nan::New(self->mat.type()));
+}
+
+// convert to yml string
+NAN_METHOD(Matrix::YML) {
+	SETUP_FUNCTION(Matrix)
+	char tmpname[] = "tmp.yml";
+	cv::FileStorage fs(tmpname, cv::FileStorage::WRITE);
+	fs << "mat" << self->mat;
+	fs.release();
+	std::ifstream is(tmpname, std::ios::binary);
+	if (is) {
+		// get length of file:
+		is.seekg(0, is.end);
+		int length = is.tellg();
+		is.seekg(0, is.beg);
+
+		std::string str;
+		str.resize(length, ' '); // reserve space
+		char* begin = &*str.begin();
+
+		is.read(begin, length);
+		is.close();	
+		info.GetReturnValue().Set(Nan::New(str).ToLocalChecked());
+	}
+	else {
+		info.GetReturnValue().Set(Nan::New("failed to read temp file").ToLocalChecked());
+	}
+	remove(tmpname);
 }

@@ -132,6 +132,7 @@ public:
   JSFUNC(Where)
   JSFUNC(SubImage)
   JSFUNC(Type)
+  JSFUNC(YML)
   /*
    static Handle<Value> Val(const Arguments& info);
    static Handle<Value> RowRange(const Arguments& info);
