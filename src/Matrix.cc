@@ -2660,9 +2660,9 @@ NAN_METHOD(Matrix::Subtract) {
 NAN_METHOD(Matrix::Where) {
 	SETUP_FUNCTION(Matrix)
 
-		if (info.Length() < 3) {
-			Nan::ThrowTypeError("Invalid number of arguments");
-		}
+	if (info.Length() < 3) {
+		Nan::ThrowTypeError("Invalid number of arguments");
+	}
 
 	if (!(info[0]->IsArray() || info[0]->IsNumber()) || !info[1]->IsNumber() || !info[2]->IsNumber()) {
 		Nan::ThrowTypeError("Invalid arguments type");
@@ -2740,7 +2740,11 @@ NAN_METHOD(Matrix::Type) {
 // convert to yml string
 NAN_METHOD(Matrix::YML) {
 	SETUP_FUNCTION(Matrix)
-	char tmpname[] = "tmp.yml";
+
+	char tmpname[L_tmpnam + 8];
+	tmpnam(tmpname);
+	strcat(tmpname, ".yml");
+
 	cv::FileStorage fs(tmpname, cv::FileStorage::WRITE);
 	fs << "mat" << self->mat;
 	fs.release();

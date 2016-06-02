@@ -1,6 +1,7 @@
 #include "OpenCV.h"
 #include "Matrix.h"
 #include <nan.h>
+#include <fstream>
 
 void OpenCV::Init(Local<Object> target) {
   Nan::HandleScope scope;
@@ -15,6 +16,7 @@ void OpenCV::Init(Local<Object> target) {
   Nan::SetMethod(target, "encPngDataURL", EncPngDataURL);
   Nan::SetMethod(target, "encDataUrl", EncDataURL);
   Nan::SetMethod(target, "decDataUrl", DecDataURL);
+  Nan::SetMethod(target, "fromYml", FromYML);
 }
 
 NAN_METHOD(OpenCV::ReadImage) {
@@ -69,4 +71,36 @@ NAN_METHOD(OpenCV::ReadImage) {
   }
 
   return;
+}
+
+NAN_METHOD(OpenCV::FromYML) {
+	Nan::EscapableHandleScope scope;
+
+	char tmpname[L_tmpnam + 8];
+	tmpnam(tmpname);
+	strcat(tmpname, ".yml");
+
+	std::ofstream ofs(tmpname, std::ios::binary );
+	if(ofs)
+	{
+		if (info.Length() < 1) {
+			Nan::ThrowTypeError("Invalid number of arguments");
+		}
+		Nan::Utf8String yml(info[0]);
+		ofs.write(*yml, yml.length());
+		ofs.close();
+
+		cv::Mat mat;
+		cv::FileStorage fs(tmpname, cv::FileStorage::READ);
+		fs["mat"] >> mat;
+		Local<Object> img_to_return =
+			Nan::New(Matrix::constructor)->GetFunction()->NewInstance();
+		Matrix *img = Nan::ObjectWrap::Unwrap<Matrix>(img_to_return);
+		img->mat = mat;
+
+		info.GetReturnValue().Set(img_to_return);
+	}else
+	{
+	    info.GetReturnValue().Set(Nan::New("failed to open temp file.").ToLocalChecked());
+	}
 }

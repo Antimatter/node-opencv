@@ -75,6 +75,8 @@ public:
   static NAN_METHOD(EncDataURL);
 
   static NAN_METHOD(DecDataURL);
+
+  static NAN_METHOD(FromYML);
 };
 
 #endif
