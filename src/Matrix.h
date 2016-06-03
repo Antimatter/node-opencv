@@ -133,6 +133,7 @@ public:
   JSFUNC(SubImage)
   JSFUNC(Type)
   JSFUNC(YML)
+  JSFUNC(Replace)
 
   /*
    static Handle<Value> Val(const Arguments& info);

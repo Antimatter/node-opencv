@@ -117,7 +117,7 @@ void Matrix::Init(Local<Object> target) {
 	Nan::SetPrototypeMethod(ctor, "subImage", SubImage);
 	Nan::SetPrototypeMethod(ctor, "type", Type);
 	Nan::SetPrototypeMethod(ctor, "yml", YML);
-
+	Nan::SetPrototypeMethod(ctor, "replace", Replace);
 	target->Set(Nan::New("Matrix").ToLocalChecked(), ctor->GetFunction());
 };
 
@@ -2767,4 +2767,29 @@ NAN_METHOD(Matrix::YML) {
 		info.GetReturnValue().Set(Nan::New("failed to read temp file").ToLocalChecked());
 	}
 	remove(tmpname);
+}
+
+NAN_METHOD(Matrix::Replace) {
+	SETUP_FUNCTION(Matrix)
+
+	if (info.Length() < 2) {
+		Nan::ThrowTypeError("Invalid number of arguments");
+	}
+
+	if (self->mat.type() != CV_8UC1) {
+		Nan::ThrowTypeError("Replace works on CV_8UC1 Mat Only");
+	}
+
+	uchar newValue = (uchar)(info[0]->NumberValue());
+	uchar oldValue = (uchar)(info[1]->NumberValue());
+
+	for (int i = 0; i < self->mat.rows; i++)
+	{		
+		uchar* Mis = self->mat.ptr<uchar>(i);
+		for (int j = 0; j < self->mat.cols; j++)
+		{
+			uchar &spixel = Mis[j];
+			spixel = (spixel == oldValue) ? newValue : oldValue;
+		}
+	}
 }
