@@ -65,7 +65,7 @@
           "OS==\"mac\"", {
             "xcode_settings": {
             "OTHER_CFLAGS": [
-              "-mmacosx-version-min=10.7",
+              "-mmacosx-version-min=10.11",
             "-std=c++11",
             "-stdlib=libc++",
             "<!@(node utils/find-opencv.js --cflags)",
